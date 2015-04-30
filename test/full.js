@@ -1,5 +1,6 @@
 
 import Flux from '..'
+import Promise from 'bluebird'
 
 class MyActions {
   setNum(num) {
@@ -12,6 +13,14 @@ class MyActions {
 
   setVal(name, value) {
     return {name, value}
+  }
+
+  doLater(name, value) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve({name, value})
+      }, 10)
+    })
   }
 }
 
@@ -31,6 +40,9 @@ f.addStore('mystore', () => {
       update({mynum: {$set: state.mynum + 1}})
     },
     setVal({name, value}, update) {
+      update({mymap: {[name]: {$set: value}}})
+    },
+    doLater({name, value}, update) {
       update({mymap: {[name]: {$set: value}}})
     }
   }
@@ -58,4 +70,5 @@ f.sendAction('myactions.inc')
 f.sendAction('myactions.setNum', 2)
 f.sendAction('myactions.inc')
 f.sendAction(['myactions.setVal', 'one'], '45')
+f.sendAction('myactions.doLater', 'one', '10')
 

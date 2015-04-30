@@ -1,6 +1,5 @@
 
 import React from 'react'
-// import Flux from '../react'
 import {Flux, fluxify, FluxTop} from '../react'
 
 const flux = new Flux()
@@ -24,18 +23,36 @@ flux.addActions('myactions', {
     mystore: {name: 'name'}
   },
   actions: {
-    onChange: ['myactions.changeName', 'julie']
+    onChange: 'myactions.nameChange',
   }
 })
-class App extends React.Component {
+class Thing extends React.Component {
   render() {
     return <div>
       {this.props.name}
-      <button onClick={this.props.onChange}>Change the Name</button>
+      <button onClick={() => this.props.onChange(this.props.name + '+')}>Change the Name</button>
     </div>
   }
 }
 
-console.log(
-  React.renderToString(<App flux={flux}/>))
+@fluxify({})
+class App extends React.Component {
+  render() {
+    return <div>
+      <h1>Hitlabs Image Facer</h1>
+      <ul>
+        {[1,2,3].map(name =>
+          <li key={name}>
+            <Thing
+              key={name}
+              name={name}/>
+          </li>)}
+      </ul>
+    </div>
+  }
+}
+
+var div = document.createElement('div')
+document.body.appendChild(div)
+React.render(flux.wrap(<App/>), div)
 
