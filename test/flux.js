@@ -112,8 +112,8 @@ describe('async actions', () => {
           error: 'fail'
         })
         done()
-      }, 10)
-    }, 10)
+      }, 0)
+    }, 0)
   })
 })
 
