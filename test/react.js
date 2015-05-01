@@ -1,58 +1,80 @@
 
+import expect from 'expect.js'
 import React from 'react'
-import {Flux, fluxify, FluxTop} from '../react'
+import {Flux, fluxify} from '../react'
 
-const flux = new Flux()
-
-flux.addStore('mystore', () => ({name: 'jared'}), {
-  myactions: {
-    nameChange(val, update) {
-      update({name: {$set: val}})
+describe('React', () => {
+  it('should throw Error if no flux context', () => {
+    @fluxify({})
+    class Thing extends React.Component {
+      render() {
+        return <span>Hi</span>
+      }
     }
-  }
+
+    expect(React.renderToStaticMarkup.bind(React)).withArgs(<Thing/>).to.throwError(/Flux must come/)
+  })
+
+  it('should throw Error if contextTypes has been tampered with', () => {
+    @fluxify({})
+    class Thing extends React.Component {
+      render() {
+        return <span>Hi</span>
+      }
+    }
+
+    let flux = new Flux()
+
+    Thing.contextTypes = {}
+
+    expect(React.renderToStaticMarkup.bind(React))
+      .withArgs(flux.wrap(<Thing/>)).to.throwError(/Thing.contextTypes has been modified/)
+  })
+
+  describe('with lots of things setup', () => {
+    let ThingEl
+    let flux
+    beforeEach(() => {
+      @fluxify({
+        data: {
+          one: {
+            thing: 'thing'
+          }
+        },
+        actions: {
+          doThing: ['one.thing', 'done']
+        }
+      })
+      class Thing extends React.Component {
+        render() {
+          return <span>{this.props.thing}</span>
+        }
+      }
+      ThingEl = Thing
+
+      flux = new Flux()
+      flux.addStore('one', () => ({thing: 'undone'}), {
+        one: {
+          thing(val, update) {
+            update({thing: {$set: val}})
+          }
+        }
+      })
+      flux.addActions('one', {
+        thing: true
+      })
+    })
+
+    it('should render', () => {
+      const str = React.renderToStaticMarkup(flux.wrap(<ThingEl/>))
+      expect(str).to.eql('<span>undone</span>')
+    })
+
+    it('should reflect action change', () => {
+      flux.sendAction('one.thing', 'done')
+      const str = React.renderToStaticMarkup(flux.wrap(<ThingEl/>))
+      expect(str).to.eql('<span>done</span>')
+    })
+  })
 })
-
-flux.addActions('myactions', {
-  nameChange(newName) {
-    return newName
-  }
-})
-
-@fluxify({
-  data: {
-    mystore: {name: 'name'}
-  },
-  actions: {
-    onChange: 'myactions.nameChange',
-  }
-})
-class Thing extends React.Component {
-  render() {
-    return <div>
-      {this.props.name}
-      <button onClick={() => this.props.onChange(this.props.name + '+')}>Change the Name</button>
-    </div>
-  }
-}
-
-@fluxify({})
-class App extends React.Component {
-  render() {
-    return <div>
-      <h1>Hitlabs Image Facer</h1>
-      <ul>
-        {[1,2,3].map(name =>
-          <li key={name}>
-            <Thing
-              key={name}
-              name={name}/>
-          </li>)}
-      </ul>
-    </div>
-  }
-}
-
-var div = document.createElement('div')
-document.body.appendChild(div)
-React.render(flux.wrap(<App/>), div)
 
