@@ -71,11 +71,11 @@ describe('utils', () => {
     }
     utils.subShape(shape, obj, listentree, result, morefn)
 
-    utils.unsubShape(shape, obj, listentree, morefn)
+    utils.unsubShape(shape, listentree, morefn)
 
-    expect(listentree).to.eql({one: {two: {three: {
+    expect(unset(listentree)).to.eql(unset({one: {two: {three: {
             $listeners: new Set([fn.four])
-    }}}})
+    }}}}))
   })
 
   it('diffShape', () => {
