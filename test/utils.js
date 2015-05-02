@@ -70,7 +70,6 @@ describe('utils', () => {
       four: () => 'more'
     }
     utils.subShape(shape, obj, listentree, result, morefn)
-
     utils.unsubShape(shape, listentree, morefn)
 
     expect(unset(listentree)).to.eql(unset({one: {two: {three: {
