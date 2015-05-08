@@ -1,5 +1,7 @@
 
-export Flux from './lib/flux-react.js'
-export FluxTop from './lib/flux-top.js'
-export fluxify from './lib/decorator'
+module.exports = {
+  Flux: require('./lib/flux-react'),
+  FluxTop: require('./lib/flux-top'),
+  fluxify: require('./lib/decorator'),
+}
 

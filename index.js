@@ -1,3 +1,3 @@
 
-export default from './lib/flux'
+module.expoorts = require('./lib/flux')
 
