@@ -69,24 +69,32 @@ describe('async actions', () => {
     flux.addStore('async', {
       async: {
         call: {
-          start(tid, args, update) {
-            update({called: {$set: args}, tid: {$set: tid}, done: {$set: null}})
+          start(store, tid, args) {
+            store.update({
+              called: {$set: args},
+              tid: {$set: tid},
+              done: {$set: null}
+            })
           },
-          error(tid, {error, args}, update, state) {
-            expect(tid).to.equal(state.tid)
-            update({error: {$set: {args, error}}})
+          error(store, tid, {error, args}) {
+            console.log('error', tid, error, args)
+            expect(tid).to.equal(store.state.tid)
+            store.update({error: {$set: {args, error}}})
           },
-          done(tid, {args, result}, update, state) {
-            expect(tid).to.equal(state.tid)
-            update({done: {$set: {args, result}}})
+          done(store, tid, {args, result}) {
+            console.log('done', store, tid, args, result)
+            expect(tid).to.equal(store.state.tid)
+            store.update({done: {$set: {args, result}}})
           },
-          result(tid, result, update, state) {
-            expect(tid).to.equal(state.tid)
-            update({result: {$set: result}})
+          result(store, tid, result) {
+            console.log('result', store, tid, result)
+            expect(tid).to.equal(store.state.tid)
+            store.update({result: {$set: result}})
           }
         }
       }
     })
+
     flux.addActions('async', {
       call(value) {
         return new Promise((resolve, reject) => {
@@ -112,8 +120,8 @@ describe('async actions', () => {
           error: 'fail'
         })
         done()
-      }, 0)
-    }, 0)
+      }, 10)
+    }, 10)
   })
 })
 
@@ -122,14 +130,15 @@ describe('Flux Basic Setup', () => {
     let flux = new Flux()
     flux.addStore('one', 10, {
       one: {
-        inc(val, update, state) {
-          update({$set: state + 1})
+        inc(store, val) {
+          store.update({$set: store.state + 1})
         },
-        set(val, update) {
-          update({$set: val})
+        set(store, val) {
+          store.update({$set: val})
         },
       }
     })
+
     flux.addActions('one', {
       inc: true,
       set: true,
@@ -147,14 +156,16 @@ describe('Full walkthrough', () => {
     let flux = new Flux()
     flux.addStore('one', 10, {
       one: {
-        inc(val, update, state) {
-          update({$set: state + 1})
+        inc(store, val) {
+          store.update({$set: store.state + 1})
         },
-        set(val, update) {
-          update({$set: val})
+
+        set(store, val) {
+          store.update({$set: val})
         },
       }
     })
+
     flux.addActions('one', {
       inc: true,
       set: true,

@@ -55,8 +55,8 @@ describe('React', () => {
       flux = new Flux()
       flux.addStore('one', () => ({thing: 'undone'}), {
         one: {
-          thing(val, update) {
-            update({thing: {$set: val}})
+          thing(store, val) {
+            store.update({thing: {$set: val}})
           }
         }
       })

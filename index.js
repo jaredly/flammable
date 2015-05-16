@@ -1,3 +1,3 @@
 
-module.expoorts = require('./lib/flux')
+module.exports = require('./lib/flux')
 
