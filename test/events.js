@@ -13,7 +13,6 @@ describe('Flux', () => {
     flux.addStore('thing', {one: 2}, {
       some: {
         doit(store, val) {
-          console.log('awesomething', store, val)
           store.update({one: {$set: val}}, [
             store.event('other', 'evt', 'hello')
           ])

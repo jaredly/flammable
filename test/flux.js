@@ -77,17 +77,14 @@ describe('async actions', () => {
             })
           },
           error(store, tid, {error, args}) {
-            console.log('error', tid, error, args)
             expect(tid).to.equal(store.state.tid)
             store.update({error: {$set: {args, error}}})
           },
           done(store, tid, {args, result}) {
-            console.log('done', store, tid, args, result)
             expect(tid).to.equal(store.state.tid)
             store.update({done: {$set: {args, result}}})
           },
           result(store, tid, result) {
-            console.log('result', store, tid, result)
             expect(tid).to.equal(store.state.tid)
             store.update({result: {$set: result}})
           }

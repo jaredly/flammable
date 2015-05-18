@@ -77,15 +77,13 @@ describe('React', () => {
 
     it('should render', () => {
       const str = React.renderToStaticMarkup(flux.wrap(<ThingEl/>))
-      console.log('normal', str)
-      // expect(str).to.eql('<span>undone</span>')
+      expect(str).to.eql('<span>undone</span>')
     })
 
     it('should reflect action change', () => {
       flux.sendAction('one.thing', 'done')
       const str = React.renderToStaticMarkup(flux.wrap(<ThingEl/>))
-      console.log('data', str)
-      // expect(str).to.eql('<span>done</span>')
+      expect(str).to.eql('<span>done</span>')
     })
 
   })
