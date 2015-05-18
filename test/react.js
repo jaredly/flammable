@@ -31,6 +31,65 @@ describe('React', () => {
       .withArgs(flux.wrap(<Thing/>)).to.throwError(/Thing.contextTypes has been modified/)
   })
 
+  describe('should work with events', done => {
+    let ThingEl
+    let flux
+
+    beforeEach(() => {
+      @fluxify({
+        events: (props, events) => [
+          events('egroup', 'somev', 23)
+        ],
+        sample: {
+          one: {
+            thing: 'thing'
+          }
+        },
+        actions: {
+          doThing: ['one.thing', 'done']
+        }
+      })
+      class Thing extends React.Component {
+        render() {
+          return <span>{this.props.thing || '! not defined'}</span>
+        }
+      }
+      ThingEl = Thing
+
+      flux = new Flux()
+      flux.addEvents('egroup', {
+        somev: num => 'some:' + num,
+      })
+
+      flux.addStore('one', () => ({thing: 'undone'}), {
+        one: {
+          thing(store, val) {
+            store.update({thing: {$set: val}}, [
+              store.event('egroup', 'somev', 23)
+            ])
+          }
+        }
+      })
+      flux.addActions('one', {
+        thing: true
+      })
+    })
+
+    it('should render', () => {
+      const str = React.renderToStaticMarkup(flux.wrap(<ThingEl/>))
+      console.log('normal', str)
+      // expect(str).to.eql('<span>undone</span>')
+    })
+
+    it('should reflect action change', () => {
+      flux.sendAction('one.thing', 'done')
+      const str = React.renderToStaticMarkup(flux.wrap(<ThingEl/>))
+      console.log('data', str)
+      // expect(str).to.eql('<span>done</span>')
+    })
+
+  })
+
   describe('with lots of things setup', () => {
     let ThingEl
     let flux
