@@ -29,11 +29,15 @@ describe('Flux', () => {
       evt: thing => 'thing->' + thing,
     })
 
-    flux.listenToEvents([flux.event('other', 'evt', 'hello')], () => {
+    const valListener = () => {
+      flux.unlistenEvents([flux.event('other', 'evt', 'hello')], valListener)
       done()
-    })
+    }
+
+    flux.listenToEvents([flux.event('other', 'evt', 'hello')], valListener)
 
     flux.sendAction('some.doit', 100)
+
   })
 })
 

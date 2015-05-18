@@ -22,6 +22,7 @@
     "bluebird": "^2.9.25",
     "expect": "^1.6.0",
     "expect.js": "^0.3.1",
+    "isparta": "^3.0.3",
     "mocha-multi": "^0.7.1",
     "patched-blanket": "^1.0.1",
     "webpack": "^1.8.10"

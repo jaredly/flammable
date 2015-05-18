@@ -1,14 +1,24 @@
 
 MULTI='spec=- html-cov=cov.html json-cov=cov.json'
-MOCHA=multi=${MULTI} ./node_modules/.bin/mocha --require babel-core/browser-polyfill --require patched-blanket -R mocha-multi
+MOCHA=multi=${MULTI} ./node_modules/.bin/mocha \
+      --require babel-core/browser-polyfill \
+      --require patched-blanket -R mocha-multi
 
 test:
 	./node_modules/.bin/mocha --compilers 'js:./test/babel' -R spec test
 
 utils:
-	./node_modules/.bin/mocha --compilers 'js:./test/babel' -R spec test/utils.js
+	./node_modules/.bin/mocha --compilers 'js:./test/babel' \
+		-R spec test/utils.js
 
-test-cov: b-test b-lib
+test-cov:
+	babel-node node_modules/.bin/isparta cover --report text \
+		--report html node_modules/.bin/_mocha \
+		-- --reporter spec ./test/flux.js ./test/events.js \
+				   ./test/react.js ./test/utils.js
+	cp istanbulcss/* coverage
+
+old-test-cov: b-test b-lib
 	${MOCHA} build/test
 
 B_TEST=$(patsubst %,build/%, $(filter-out test/babel.js test/webpack.config.js, $(wildcard test/*.js)))
